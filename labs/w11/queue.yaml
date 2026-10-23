@@ -1,0 +1,9 @@
+# Volcano 队列：research 最多使用 4 张 GPU（capability 是硬上限），weight 决定空闲资源按比例分配
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: Queue
+metadata: {name: research}
+spec:
+  weight: 1
+  reclaimable: true
+  capability:
+    nvidia.com/gpu: 4

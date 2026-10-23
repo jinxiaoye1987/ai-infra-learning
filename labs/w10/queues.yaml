@@ -1,0 +1,92 @@
+# 两种 GPU“风味”（ResourceFlavor）：按节点标签区分 A100 与 L4
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ResourceFlavor
+metadata: {name: a100}
+spec:
+  nodeLabels: {nvidia.com/gpu.product: NVIDIA-A100-SXM4-80GB}
+  tolerations: [{key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}]
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ResourceFlavor
+metadata: {name: l4}
+spec:
+  nodeLabels: {nvidia.com/gpu.product: NVIDIA-L4}
+  tolerations: [{key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}]
+---
+# 团队 A 的集群队列：A100 名义配额 4 张，可借用同一 cohort 中的闲置额度
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata: {name: cq-team-a}
+spec:
+  cohortName: gpu-pool
+  namespaceSelector: {}
+  queueingStrategy: BestEffortFIFO
+  preemption:
+    reclaimWithinCohort: Any            # 别人借走的我的额度，我需要时可以抢回
+    withinClusterQueue: LowerPriority   # 队列内高优先级可以抢占低优先级
+  resourceGroups:
+  - coveredResources: ["cpu", "memory", "nvidia.com/gpu"]
+    flavors:
+    - name: a100
+      resources:
+      - {name: cpu, nominalQuota: 48}
+      - {name: memory, nominalQuota: 512Gi}
+      - {name: nvidia.com/gpu, nominalQuota: 4}
+    - name: l4
+      resources:
+      - {name: cpu, nominalQuota: 24}
+      - {name: memory, nominalQuota: 96Gi}
+      - {name: nvidia.com/gpu, nominalQuota: 2}
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata: {name: cq-team-b}
+spec:
+  cohortName: gpu-pool
+  namespaceSelector: {}
+  queueingStrategy: BestEffortFIFO
+  preemption:
+    reclaimWithinCohort: Any            # 别人借走的我的额度，我需要时可以抢回
+    withinClusterQueue: LowerPriority   # 队列内高优先级可以抢占低优先级
+  resourceGroups:
+  - coveredResources: ["cpu", "memory", "nvidia.com/gpu"]
+    flavors:
+    - name: a100
+      resources:
+      - {name: cpu, nominalQuota: 48}
+      - {name: memory, nominalQuota: 512Gi}
+      - {name: nvidia.com/gpu, nominalQuota: 4}
+    - name: l4
+      resources:
+      - {name: cpu, nominalQuota: 24}
+      - {name: memory, nominalQuota: 96Gi}
+      - {name: nvidia.com/gpu, nominalQuota: 2}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: team-a}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: team-b}
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: LocalQueue
+metadata: {name: lq, namespace: team-a}
+spec: {clusterQueue: cq-team-a}
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: LocalQueue
+metadata: {name: lq, namespace: team-b}
+spec: {clusterQueue: cq-team-b}
+---
+# 作业优先级（Kueue 自己的优先级类，只影响排队与抢占，不影响 Pod 的调度优先级）
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: WorkloadPriorityClass
+metadata: {name: high}
+value: 1000
+---
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: WorkloadPriorityClass
+metadata: {name: low}
+value: 100

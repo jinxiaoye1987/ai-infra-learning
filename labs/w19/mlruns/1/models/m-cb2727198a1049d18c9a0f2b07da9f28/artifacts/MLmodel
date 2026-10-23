@@ -1,0 +1,23 @@
+artifact_path: /workspace/ai-infra-transition/labs/w19/mlruns/1/models/m-cb2727198a1049d18c9a0f2b07da9f28/artifacts
+flavors:
+  python_function:
+    artifacts:
+      adapter:
+        path: artifacts/adapter-r16
+        uri: ../w19/adapter-r16
+    cloudpickle_version: 3.1.2
+    code: null
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pyfunc.model
+    python_model: python_model.pkl
+    python_version: 3.12.15
+    streamable: false
+mlflow_version: 3.17.1
+model_id: m-cb2727198a1049d18c9a0f2b07da9f28
+model_size_bytes: 4345848
+model_uuid: m-cb2727198a1049d18c9a0f2b07da9f28
+prompts: null
+run_id: 47b36914608245c984e65216fdcc6925
+utc_time_created: '2026-10-20 04:55:08.822392'

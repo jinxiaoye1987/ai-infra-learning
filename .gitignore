@@ -1,0 +1,21 @@
+# deps & build
+site/node_modules/
+site/dist/
+**/node_modules/
+**/dist/
+
+# generated lab data (large)
+labs/**/raw/
+labs/**/dirty/
+labs/**/clean/
+labs/**/input/
+labs/**/*.parquet
+labs/mlflow.db
+**/*.db
+
+# local / secrets
+.env
+.env.*
+*.pem
+.wrangler/
+.DS_Store

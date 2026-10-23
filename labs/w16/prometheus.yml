@@ -1,0 +1,5 @@
+# 抓取第 14 周的 mini_server（生产中把 targets 换成 vLLM 的 host:8000，指标前缀为 vllm:）
+global: {scrape_interval: 5s}
+scrape_configs:
+  - job_name: llm
+    static_configs: [{targets: ["127.0.0.1:8000"]}]

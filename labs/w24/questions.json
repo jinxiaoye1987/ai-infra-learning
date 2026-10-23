@@ -1,0 +1,12 @@
+[
+ {"topic": "推理", "q": "24GB 卡部署 7B 模型，怎样估算最大并发？", "points": ["权重 ≈ 参数量×2 字节", "KV/token = 2×层数×KV头数×head_dim×字节", "预算 = 显存×利用率 − 权重 − 激活预留", "并发 ≈ KV 容量 ÷ (KV/token × 上下文)", "用 vLLM 日志校准"], "ref": "第 13 周实验 1"},
+ {"topic": "推理", "q": "TTFT 高可能是什么原因？如何定位？", "points": ["排队（并发超过 batch/KV 容量）", "prompt 长导致 prefill 慢", "长 prefill 干扰（chunked prefill）", "看排队请求数与 KV 使用率指标", "前缀缓存命中率"], "ref": "第 14、16 周"},
+ {"topic": "推理", "q": "解释 PagedAttention 和 continuous batching。", "points": ["KV 分块 + 块表", "按需分配，浪费 < 1 块", "前缀共享/写时复制", "迭代级调度，完成即离开、排队即补位", "吞吐与延迟同时改善"], "ref": "第 13 周"},
+ {"topic": "调度", "q": "Gang 调度解决什么问题？Kueue 与 Volcano 的区别？", "points": ["部分调度死锁", "全有或全无", "Kueue 做作业级准入（suspend），不替换调度器", "Volcano 是批调度器，自带 Queue + gang + 插件", "可组合使用"], "ref": "第 9–11 周"},
+ {"topic": "调度", "q": "如何设计多团队 GPU 配额、借用与抢占？", "points": ["按团队 ClusterQueue + nominalQuota", "cohort 借用闲置额度", "reclaimWithinCohort 回收", "优先级抢占", "ResourceFlavor 区分卡型与回退", "被抢占作业需要 checkpoint"], "ref": "第 10 周"},
+ {"topic": "数据", "q": "设计 PB 级预训练数据清洗去重管线，Ray 还是 Spark？", "points": ["清洗/过滤：两者皆可", "模型打分/批量推理：Ray Data actor 池 + GPU 更合适", "去重 shuffle：Spark 成熟", "数据版本与 manifest", "按实测瓶颈分配资源"], "ref": "第 6–8 周、第 22 周"},
+ {"topic": "训练", "q": "ZeRO-1/2/3 分别切了什么？TP 为什么放在机内？", "points": ["1 切优化器，2 再切梯度，3 再切参数", "ZeRO-3 通信约 1.5×DP", "16 字节/参数口径", "TP 每层 AllReduce 在关键路径", "需要 NVLink 带宽"], "ref": "第 17 周"},
+ {"topic": "训练", "q": "Ring AllReduce 的通信量是多少？为什么与卡数基本无关？", "points": ["ReduceScatter + AllGather", "每卡发送 2(n−1)/n × S", "大消息带宽主导", "小消息延迟主导，需要分桶", "busbw 换算"], "ref": "第 18 周"},
+ {"topic": "平台", "q": "怎样衡量和提升 GPU 集群利用率？", "points": ["分配率 vs 实际利用率（DCGM）", "碎片化与 binpack", "队列借用减少空闲", "推理按排队数扩缩容", "按团队计量 GPU·小时"], "ref": "第 9、10、16 周"},
+ {"topic": "平台", "q": "千卡训练作业频繁因硬件故障中断，平台应提供什么能力？", "points": ["分片 checkpoint 与重分片恢复", "故障检测与自动重启", "弹性训练", "gang 调度保证整体重启", "checkpoint 间隔的取舍"], "ref": "第 19 周"}
+]

@@ -1,0 +1,10 @@
+# 错误示范 2：想要“半张卡”
+apiVersion: v1
+kind: Pod
+metadata: {name: bad-frac}
+spec:
+  containers:
+  - name: main
+    image: busybox
+    resources:
+      limits: {nvidia.com/gpu: 500m}

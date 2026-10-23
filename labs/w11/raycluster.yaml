@@ -1,0 +1,36 @@
+# RayCluster + Volcano：label 让 KubeRay 为整个集群创建一个 PodGroup（head + 全部 worker 的 gang）
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: rc-gang
+  labels:
+    ray.io/scheduler-name: volcano
+    volcano.sh/queue-name: default
+spec:
+  rayVersion: "2.59.0"
+  headGroupSpec:
+    rayStartParams: {}
+    template:
+      metadata:
+        annotations: {pod-complete.stage.kwok.x-k8s.io/delay: "3600s", pod-complete.stage.kwok.x-k8s.io/jitter-delay: "3600s"}
+      spec:
+        tolerations: [{key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}]
+        containers:
+        - name: ray-head
+          image: rayproject/ray:2.59.0
+          resources: {limits: {cpu: "1", memory: 2Gi}, requests: {cpu: "1", memory: 2Gi}}
+  workerGroupSpecs:
+  - groupName: gpu
+    replicas: 3
+    minReplicas: 3
+    maxReplicas: 3
+    rayStartParams: {}
+    template:
+      metadata:
+        annotations: {pod-complete.stage.kwok.x-k8s.io/delay: "3600s", pod-complete.stage.kwok.x-k8s.io/jitter-delay: "3600s"}
+      spec:
+        tolerations: [{key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}]
+        containers:
+        - name: ray-worker
+          image: rayproject/ray:2.59.0
+          resources: {limits: {nvidia.com/gpu: 4}, requests: {nvidia.com/gpu: 4}}

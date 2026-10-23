@@ -1,0 +1,46 @@
+{
+ "version": "v20261020-nogit-1d70bf",
+ "created": "2026-10-20T13:01:07",
+ "params": {
+  "input": "../w6/clean",
+  "n": 600,
+  "threshold": 2,
+  "jaccard": 0.8,
+  "code_rev": "nogit"
+ },
+ "stages": {
+  "load": {
+   "in": 0,
+   "out": 600
+  },
+  "exact": {
+   "in": 600,
+   "out": 599
+  },
+  "minhash": {
+   "in": 599,
+   "out": 599
+  },
+  "score": {
+   "in": 599,
+   "out": 599
+  },
+  "filter": {
+   "in": 599,
+   "out": 168
+  }
+ },
+ "seconds": {
+  "load": 0.15,
+  "exact": 0.04,
+  "minhash": 0.54,
+  "score": 71.09,
+  "filter": 0.01
+ },
+ "rows": 168,
+ "int_score_hist": {
+  "2": 135,
+  "3": 31,
+  "4": 2
+ }
+}

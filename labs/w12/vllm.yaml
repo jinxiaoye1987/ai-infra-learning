@@ -1,0 +1,35 @@
+# vLLM 推理服务：Deployment + Service。nodeSelector 用 GPU Feature Discovery 打的型号标签选 L4。
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: vllm}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: vllm}}
+  template:
+    metadata: {labels: {app: vllm}}
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: NVIDIA-L4
+      tolerations: [{key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}]
+      containers:
+      - name: vllm
+        image: vllm/vllm-openai:latest      # 生产中请固定版本号
+        args: ["--model", "Qwen/Qwen2.5-1.5B-Instruct", "--max-model-len", "4096"]
+        ports: [{containerPort: 8000}]
+        readinessProbe:                      # 模型加载完成前不接流量
+          httpGet: {path: /health, port: 8000}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        resources:
+          limits: {nvidia.com/gpu: 1}
+        volumeMounts: [{name: shm, mountPath: /dev/shm}]
+      volumes:
+      - name: shm                            # 张量并行时 NCCL 需要较大的共享内存
+        emptyDir: {medium: Memory, sizeLimit: 2Gi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: vllm}
+spec:
+  selector: {app: vllm}
+  ports: [{port: 8000, targetPort: 8000}]

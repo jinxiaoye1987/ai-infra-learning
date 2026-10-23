@@ -1,0 +1,10 @@
+# 没有容忍 GPU 节点污点的 GPU Pod
+apiVersion: v1
+kind: Pod
+metadata: {name: no-toleration}
+spec:
+  containers:
+  - name: main
+    image: busybox
+    resources:
+      limits: {nvidia.com/gpu: 1}
