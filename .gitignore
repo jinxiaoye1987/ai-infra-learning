@@ -12,10 +12,26 @@ labs/**/input/
 labs/**/*.parquet
 labs/mlflow.db
 **/*.db
+**/*.sqlite
+**/*.sqlite3
+
+# experiment artifacts: weights, trackers, media, logs
+**/mlruns/
+**/*.safetensors
+**/*.pkl
+**/*.pt
+**/*.pth
+**/*.onnx
+**/*.ckpt
+**/*.mp4
+**/*.webm
+**/*.mov
+**/*.log
 
 # local / secrets
 .env
 .env.*
 *.pem
+*.key
 .wrangler/
 .DS_Store

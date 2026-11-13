@@ -1,0 +1,41 @@
+name: 课程勘误
+description: 命令、链接、数字或「未实测」标注需要更正
+title: "docs: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        改正事实时请给出官方文档或你自己的运行环境。不要把未运行的 GPU 结果写成已实测，也不要粘贴私人信息。
+  - type: input
+    id: page
+    attributes:
+      label: 页面
+      description: 周页 slug 或文件路径，例如 m4w2、site/content/04-m4.md。
+      placeholder: m4w2
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题与出处
+      description: 哪里和官方文档或你的运行结果不一致。请附上文档链接。
+    validations:
+      required: true
+  - type: dropdown
+    id: evidence
+    attributes:
+      label: 你的依据
+      options:
+        - 官方文档
+        - 我在 CPU 上实际运行
+        - 我在 GPU 上实际运行
+        - 只是阅读后的疑问，尚未运行
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 确认
+      options:
+        - label: 我没有在本 Issue 中粘贴密钥、个人邮箱或虚构的运行输出
+          required: true
